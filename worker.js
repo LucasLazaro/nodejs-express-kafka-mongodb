@@ -71,11 +71,11 @@ consumer.on('message', function (message) {
         } else {
           console.log('KAFKA committing sucess:' + data);
         }
-
-        fetchCommits('worker.js', 'my-node-topic', 0);
       });
     }
   });
+
+  fetchCommits('worker.js', 'my-node-topic', 0);
 });
 
 consumer.on('error', function (err) {
@@ -104,7 +104,7 @@ var fetchCommits = function (groupId, topicName, partition) {
   offset.fetchCommits(groupId, [
         { topic: topicName, partition: partition }
     ], function (err, data) {
-        console.log('Fetch Commits from ' + consumerName + ' group:' + groupId + ', topic:' + topicName + ', partition:' + partition);
+        console.log('Fetch Commits group:' + groupId + ', topic:' + topicName + ', partition:' + partition);
         console.log(data);
   });
 };
