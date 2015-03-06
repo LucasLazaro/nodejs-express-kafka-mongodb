@@ -16,8 +16,8 @@ var moment = require('moment-timezone'),
 // Define the groupId
 var groupId = 'worker.js';
 // Payload for the consumer
-var payload = [ { topic: 'my-node-topic2'} ];
-var consumerb = new require('./consumer')(client, db, "consumerB", payload, groupId);
+var payload = [ { topic: 'my-node-topic'} ];
+var consumerb = new require('./consumer')(client, db, "consumer", payload, groupId);
 
 
 

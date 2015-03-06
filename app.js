@@ -25,13 +25,7 @@ app.post('/', function(req, res) {
     JSON.stringify({ timestamp: timestamp, rnd: Math.random() })
   ] };
 
-  // sends value to kafka
-  var topicTwoMessage = { topic: 'my-node-topic2', messages: [
-    // all messages must be string :S
-    JSON.stringify({ timestamp: timestamp, rnd: Math.random() })
-  ] };
-
-  var payload = [ topicMessage, topicTwoMessage ];
+  var payload = [ topicMessage ];
 
   producer.send(payload, function (err, data) {
     if (err) {
@@ -59,13 +53,6 @@ app.get('/', function(req, res) {
 // Kafka events
 producer.on('ready', function () {
   console.log('KAFKA producer ready');
-  producer.createTopics(['my-node-topic','my-node-topic2'], true, function (err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(data);
-    }
-  });
 });
 
 producer.on('error', function (err) {

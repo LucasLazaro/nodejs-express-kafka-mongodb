@@ -10,11 +10,9 @@ var moment = require('moment-timezone'),
     mongojs = require('mongojs'),
     db = mongojs(process.env.MONGO_URL || 'localhost:27017/kafka');
 
-
-
 // Initialize two different consumers
 // Define the groupId
 var groupId = 'worker.js';
 // Payload for the consumer
 var payload = [ { topic: 'my-node-topic'} ];
-var consumerA = new require('./consumer')(client, db, "consumerA", payload, groupId);
+var consumer = new require('./consumer')(client, db, process.env.FOREMAN_WORKER_NAME, payload, groupId);
