@@ -15,12 +15,61 @@ var express = require('express'),
 // Express setup
 app.listen(process.env.PORT || 3001);
 
-app.post('/', function(req, res) {
+
+app.post('/bothTopics', function(req, res) {
 
   var timestamp = moment().unix();
 
   // sends value to kafka
   var topicMessage = { topic: 'my-node-topic', messages: [
+    // all messages must be string :S
+    JSON.stringify({ timestamp: timestamp, rnd: Math.random() })
+  ] };
+  var topicTwoMessage = { topic: 'my-node-topic2', messages: [
+    // all messages must be string :S
+    JSON.stringify({ timestamp: timestamp, rnd: Math.random() })
+  ] };
+
+  var payload = [ topicMessage, topicTwoMessage ];
+
+  producer.send(payload, function (err, data) {
+    if (err) {
+      res.send(500, err);
+    } else {
+      res.json(200, {timestamp: timestamp});
+    }
+  });
+
+});
+
+app.post('/topic1', function(req, res) {
+
+  var timestamp = moment().unix();
+
+  // sends value to kafka
+  var topicMessage = { topic: 'my-node-topic', messages: [
+    // all messages must be string :S
+    JSON.stringify({ timestamp: timestamp, rnd: Math.random() })
+  ] };
+
+  var payload = [ topicMessage ];
+
+  producer.send(payload, function (err, data) {
+    if (err) {
+      res.send(500, err);
+    } else {
+      res.json(200, {timestamp: timestamp});
+    }
+  });
+
+});
+
+app.post('/topic2', function(req, res) {
+
+  var timestamp = moment().unix();
+
+  // sends value to kafka
+  var topicMessage = { topic: 'my-node-topic2', messages: [
     // all messages must be string :S
     JSON.stringify({ timestamp: timestamp, rnd: Math.random() })
   ] };
@@ -47,12 +96,19 @@ app.get('/', function(req, res) {
       res.json(200, data);
     }
   });
-})
+});
 
 
 // Kafka events
 producer.on('ready', function () {
   console.log('KAFKA producer ready');
+  producer.createTopics(['my-node-topic','my-node-topic2'], false, function (err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(data);
+    }
+  });
 });
 
 producer.on('error', function (err) {

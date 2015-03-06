@@ -15,7 +15,8 @@ var moment = require('moment-timezone'),
 var consumer = new HighLevelConsumer(
     client,
     [
-        { topic: 'my-node-topic' }
+        { topic: 'my-node-topic' },
+        { topic: 'my-node-topic2' }
     ],
     {
       groupId: 'worker.js' // this identifies consumer and make the offset consumption scoped to this key
@@ -26,31 +27,61 @@ consumer.on('ready', function() {
   console.log('KAFKA consumer ready');
 });
 
+// Consume the message depending the topic it is from
 consumer.on('message', function (message) {
-
   // example message: {"topic":"my-node-topic","value":"{\"timestamp\":1425599538}","offset":0,"partition":0,"key":{"type":"Buffer","data":[]}}
-  db.collection('kafka').update(
-  {
-    _id: 123456 //always overrite the same doc just for illustration
-  },
-  {
-    '$set': {
-      message: message,
-      received_at: moment().unix()
+  // If message is from Topic One
+  if(message.topic == "my-node-topic") {
+    db.collection('kafka').update(
+    {
+      _id: 123456 //always overrite the same doc just for illustration
     },
-    '$inc': {
-      messagesCount: 1
-    }
-  },
-  {
-    upsert: true
-  }, function(err, data) {
-    if(err) {
-      console.log('MONGO error updating document: ' + err);
-    } else {
-      console.log('MONGO updating document OK:' + message.value);
-    }
-  });
+    {
+      '$set': {
+        message: message,
+        received_at: moment().unix()
+      },
+      '$inc': {
+        messagesCount: 1
+      }
+    },
+    {
+      upsert: true
+    }, function(err, data) {
+      if(err) {
+        console.log('MONGO error updating document from topic1: ' + err);
+      } else {
+        console.log('MONGO updating document from topic1 OK:' + message.value);
+      }
+    });
+  }
+
+  // If message is from Topic Two
+  if(message.topic == "my-node-topic2") {
+    db.collection('kafka').update(
+    {
+      _id: 654321 //always overrite the same doc just for illustration
+    },
+    {
+      '$set': {
+        message: message,
+        received_at: moment().unix()
+      },
+      '$inc': {
+        messagesCount: 1
+      }
+    },
+    {
+      upsert: true
+    }, function(err, data) {
+      if(err) {
+        console.log('MONGO error updating document from topic2: ' + err);
+      } else {
+        console.log('MONGO updating document from topic2 OK:' + message.value);
+      }
+    });
+  }
+
 });
 
 consumer.on('error', function (err) {
