@@ -1,2 +1,3 @@
 web: node ./app.js
-worker: node ./worker.js
+consumerA: node ./consumerA.js
+consumerB: node ./consumerB.js
