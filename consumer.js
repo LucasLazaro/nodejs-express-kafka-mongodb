@@ -16,7 +16,7 @@ module.exports = function (client, db, consumerName, payload, groupId) {
   );
 
   consumer.on('ready', function() {
-    console.log('KAFKA ' + consumerName + ' ready');
+    console.log('KAFKA consumer ' + consumerName + ' ready');
   });
 
   consumer.on('message', function (message) {
@@ -46,17 +46,18 @@ module.exports = function (client, db, consumerName, payload, groupId) {
     });
 
     fetchCommits(groupId, payload[0].topic, 0);
+    fetchCommits(groupId, payload[0].topic, 1);
 
   });
 
   consumer.on('error', function (err) {
-    console.log('KAFKA ' + consumerName + ' error:' + err);
+    console.log('KAFKA consumer ' + consumerName + ' error:' + err);
   });
 
   process.on('beforeExit', function(code) {
     //force offset commit
     consumer.close(true, function(err, data) {
-      console.log('KAFKA ' + consumerName + ' commit ok :)');
+      console.log('KAFKA consumer ' + consumerName + ' commit ok :)');
     });
   });
 
@@ -75,7 +76,7 @@ module.exports = function (client, db, consumerName, payload, groupId) {
     offset.fetchCommits(groupId, [
           { topic: topicName, partition: partition }
       ], function (err, data) {
-          console.log('Fetch Commits from ' + consumerName + ' group:' + groupId + ', topic:' + topicName + ', partition:' + partition);
+          console.log('Fetch Commits from consumer ' + consumerName + ' group:' + groupId + ', topic:' + topicName + ', partition:' + partition);
           console.log(data);
     });
   };
